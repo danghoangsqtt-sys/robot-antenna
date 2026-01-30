@@ -2,10 +2,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { AntennaType, AIAnalysisResponse, AntennaOptimizationResponse, GeometryPrimitive, VisionHints } from "../types";
 
-const GEMINI_API_KEY = process.env.API_KEY || ''; 
+const GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY || ''; 
 
 // Force Demo Mode active regardless of API Key presence
-const isMock = true;
+const isMock = !GEMINI_API_KEY || import.meta.env.VITE_USE_MOCK === 'true';
 
 export const analyzeAntennaImage = async (
   base64Image: string, 

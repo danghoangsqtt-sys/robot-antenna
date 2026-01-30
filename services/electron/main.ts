@@ -1,23 +1,18 @@
-
 import { app, BrowserWindow, ipcMain } from 'electron';
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url'; // Cần thêm module này
 
-// Fix TS errors for node globals
-declare const __dirname: string;
+// -----------------------------------------------------------------------------
+// SỬA LỖI 1: Tự tạo __dirname và __filename cho môi trường ES Module
+// -----------------------------------------------------------------------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // The built directory structure
-//
-// ├─┬─ dist
-// │ └── index.html
-// ├── dist-electron
-// │ ├── main.js
-// │ └── preload.js
-//
 process.env.DIST = path.join(__dirname, '../dist');
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(__dirname, '../public');
 
 let mainWindow: BrowserWindow | null = null;
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 
 function createWindow() {
@@ -26,12 +21,16 @@ function createWindow() {
     height: 800,
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      // -----------------------------------------------------------------------
+      // SỬA LỖI 2: Cập nhật đường dẫn preload khớp với log build (.mjs)
+      // Log của bạn hiển thị: dist-electron/preload.mjs
+      // -----------------------------------------------------------------------
+      preload: path.join(__dirname, 'preload.mjs'), 
       nodeIntegration: true,
-      contextIsolation: false, // For this specific demo architecture
+      contextIsolation: false, 
     },
     titleBarStyle: 'hiddenInset',
-    backgroundColor: '#0b1220', // Matched app theme
+    backgroundColor: '#0b1220', 
   });
 
   if (VITE_DEV_SERVER_URL) {
@@ -46,7 +45,7 @@ function createWindow() {
 }
 
 app.on('window-all-closed', () => {
-  if ((process as any).platform !== 'darwin') {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });

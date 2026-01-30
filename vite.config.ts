@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite'
 import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
@@ -10,15 +9,14 @@ export default defineConfig({
     react(),
     electron({
       main: {
-        // Shortcut of `build.lib.entry`.
-        entry: 'electron/main.ts',
+        // SỬA LỖI: Trỏ đúng vào thư mục services/electron
+        entry: 'services/electron/main.ts',
       },
       preload: {
-        // Shortcut of `build.lib.entry`.
-        input: 'electron/preload.ts',
+        // SỬA LỖI: Trỏ đúng vào thư mục services/electron
+        input: 'services/electron/preload.ts',
       },
-      // Ployfill the Electron and Node.js built-in modules for Renderer process.
-      // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
+      // Polyfill cho Electron và Node.js trong Renderer process
       renderer: {},
     }),
   ],

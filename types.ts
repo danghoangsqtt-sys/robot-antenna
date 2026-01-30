@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SolverState, MaxwellMethod } from './modules/maxwell/types';
 
@@ -303,51 +304,6 @@ export enum HandGesture {
 
 // Global Augmentation for React Three Fiber intrinsic elements
 declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      fog: any;
-      gridHelper: any;
-      axesHelper: any;
-      ambientLight: any;
-      pointLight: any;
-      directionalLight: any;
-      spotLight: any;
-      group: any;
-      arrowHelper: any;
-      mesh: any;
-      scene: any;
-      
-      // Materials
-      meshStandardMaterial: any;
-      meshBasicMaterial: any;
-      meshPhongMaterial: any;
-      shaderMaterial: any;
-      
-      // Geometries
-      boxGeometry: any;
-      sphereGeometry: any;
-      cylinderGeometry: any;
-      coneGeometry: any;
-      planeGeometry: any;
-      bufferGeometry: any;
-      circleGeometry: any;
-
-      // Objects/Misc
-      points: any;
-      // line: any; // Removed to avoid conflict with SVG line
-      lineLoop: any;
-      lineSegments: any;
-      bufferAttribute: any;
-      primitive: any;
-      
-      // Catch-all for anything else
-      [elemName: string]: any;
-    }
-  }
-}
-
-// Augment React's JSX namespace as well to cover all bases
-declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
       fog: any;
