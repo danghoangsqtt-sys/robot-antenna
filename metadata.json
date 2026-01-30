@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Copy of AntennaViz-AI (Advanced)",
+  "description": "Mô phỏng búp sóng anten 3D thời gian thực với điều khiển bằng cử chỉ tay và phân tích AI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

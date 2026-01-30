@@ -1,0 +1,37 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0b1220; /* Dark Background */
+  color: #e2e8f0; /* Light Slate Text */
+  overflow: hidden;
+  margin: 0;
+}
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+/* Tech Scrollbar - Dark Mode */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a; 
+}
+::-webkit-scrollbar-thumb {
+  background: #334155; 
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569; 
+}
+
+/* Utilities for Tech UI - Dark Mode */
+.tech-panel {
+  background: rgba(16, 28, 46, 0.95); /* #101c2e */
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.tech-border {
+  border: 1px solid #00c8ff;
+}
