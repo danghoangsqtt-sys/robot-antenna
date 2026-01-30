@@ -1,37 +1,118 @@
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: #0b1220; /* Dark Background */
-  color: #e2e8f0; /* Light Slate Text */
-  overflow: hidden;
-  margin: 0;
-}
-.font-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-/* Tech Scrollbar - Dark Mode */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0f172a; 
-}
-::-webkit-scrollbar-thumb {
-  background: #334155; 
-  border-radius: 0px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #475569; 
+/* Container chính: Tăng kích thước và cố định vị trí */
+.chat-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 400px;        /* Tăng chiều rộng (cũ có thể chỉ 200-250px) */
+  height: 600px;       /* Tăng chiều cao để đọc được nhiều tin nhắn */
+  background: rgba(10, 15, 30, 0.95); /* Màu tối, độ trong suốt thấp để dễ đọc chữ */
+  border: 1px solid #00ffcc; /* Viền màu Cyan đậm chất Sci-fi/Military */
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+  z-index: 1000;       /* Đảm bảo nổi lên trên lớp 3D */
+  font-family: 'Consolas', 'Courier New', monospace; /* Font kiểu kỹ thuật */
 }
 
-/* Utilities for Tech UI - Dark Mode */
-.tech-panel {
-  background: rgba(16, 28, 46, 0.95); /* #101c2e */
-  border: 1px solid #1e293b;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
+/* Header */
+.chat-header {
+  padding: 15px;
+  background: rgba(0, 255, 204, 0.1);
+  border-bottom: 1px solid #00ffcc;
+  color: #00ffcc;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.tech-border {
-  border: 1px solid #00c8ff;
+.status-indicator.online {
+  width: 10px;
+  height: 10px;
+  background-color: #00ffcc;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #00ffcc;
+}
+
+/* Lịch sử chat: Quan trọng để hiển thị tin nhắn cũ */
+.chat-history {
+  flex: 1;
+  overflow-y: auto; /* Cho phép cuộn */
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Bong bóng tin nhắn */
+.message-row {
+  display: flex;
+  width: 100%;
+}
+
+.user-row {
+  justify-content: flex-end; /* Tin nhắn user nằm bên phải */
+}
+
+.bot-row {
+  justify-content: flex-start; /* Tin nhắn bot nằm bên trái */
+}
+
+.message-bubble {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px; /* Kích thước chữ vừa đủ đọc */
+  line-height: 1.4;
+}
+
+.message-bubble.user {
+  background-color: #007acc;
+  color: white;
+  border-top-right-radius: 0;
+}
+
+.message-bubble.bot {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-top-left-radius: 0;
+}
+
+/* Ô nhập liệu */
+.chat-input-area {
+  padding: 15px;
+  border-top: 1px solid #333;
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background: #111;
+  color: white;
+  outline: none;
+}
+
+.chat-input-area input:focus {
+  border-color: #00ffcc;
+}
+
+.chat-input-area button {
+  padding: 0 20px;
+  background: #00ffcc;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@keyframes scan {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
 }
