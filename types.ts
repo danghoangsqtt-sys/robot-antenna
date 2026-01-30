@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { SolverState, MaxwellMethod } from './modules/maxwell/types';
 
@@ -306,23 +305,27 @@ export enum HandGesture {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      fog: any;
-      gridHelper: any;
-      axesHelper: any;
+      // Core
+      mesh: any;
+      group: any;
+      scene: any;
+      
+      // Cameras
+      perspectiveCamera: any;
+      orthographicCamera: any;
+
+      // Lights
       ambientLight: any;
       pointLight: any;
       directionalLight: any;
       spotLight: any;
-      group: any;
-      arrowHelper: any;
-      mesh: any;
-      scene: any;
+      hemisphereLight: any;
       
-      // Materials
-      meshStandardMaterial: any;
-      meshBasicMaterial: any;
-      meshPhongMaterial: any;
-      shaderMaterial: any;
+      // Helpers
+      fog: any;
+      gridHelper: any;
+      axesHelper: any;
+      arrowHelper: any;
       
       // Geometries
       boxGeometry: any;
@@ -332,6 +335,20 @@ declare global {
       planeGeometry: any;
       bufferGeometry: any;
       circleGeometry: any;
+      capsuleGeometry: any;
+      ringGeometry: any;
+
+      // Materials
+      meshStandardMaterial: any;
+      meshBasicMaterial: any;
+      meshPhongMaterial: any;
+      meshPhysicalMaterial: any;
+      shaderMaterial: any;
+
+      // Primitive/Instancing
+      primitive: any;
+      instances: any;
+      instance: any;
 
       // Objects/Misc
       points: any;
@@ -339,7 +356,6 @@ declare global {
       lineLoop: any;
       lineSegments: any;
       bufferAttribute: any;
-      primitive: any;
       
       // Catch-all for anything else
       [elemName: string]: any;

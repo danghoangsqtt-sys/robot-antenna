@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -34,6 +33,22 @@ export const EveRobotVisual: React.FC = () => {
   // Animation Hook
   const { eyeColor, eyeIntensity, isBlinking } = useEveAnimation(groupRef, headRef, status);
 
+  // Interaction Handlers
+  const handlePointerOver = (e: any) => {
+    e.stopPropagation();
+    document.body.style.cursor = 'pointer';
+  };
+
+  const handlePointerOut = (e: any) => {
+    e.stopPropagation();
+    document.body.style.cursor = 'auto';
+  };
+
+  const handleClick = (e: any) => {
+    e.stopPropagation();
+    EveController.getInstance().bus.emit('chat:toggle_visibility');
+  };
+
   return (
     <group ref={groupRef} position={[0, -0.5, 0]} scale={0.45}>
        <EveModel 
@@ -41,6 +56,9 @@ export const EveRobotVisual: React.FC = () => {
           eyeColor={eyeColor}
           eyeIntensity={eyeIntensity}
           isBlinking={isBlinking}
+          onClick={handleClick}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
        />
     </group>
   );

@@ -23,10 +23,11 @@ import { VersionHistoryPanel } from './ui/panels/VersionHistoryPanel';
 // EVE System Imports
 import { EveController } from './ai-robot-eve/core/EveController';
 import { EveChatModule } from './ai-robot-eve/chat-ui/EveChatModule';
-import { ChatWindow } from './ai-robot-eve/chat-ui/ChatWindow';
-import { EveBrain } from './ai-robot-eve/ai-logic/EveBrain';
 import { EveOverlayContainer } from './ai-robot-eve/graphics/EveOverlayContainer';
 import { EveSimulationBridge } from './ai-robot-eve/integration/EveSimulationBridge';
+
+// --- HOLOGRAM SYSTEM UPGRADE ---
+import { HologramBrain } from './eve-hologram-system/ai/HologramBrain';
 
 const App: React.FC = () => {
   const { activeRightPanel } = useStore();
@@ -37,7 +38,8 @@ const App: React.FC = () => {
     
     // Register Modules
     eve.registerModule(new EveChatModule());
-    eve.registerModule(new EveBrain());
+    // UPGRADE: Use HologramBrain instead of EveBrain
+    eve.registerModule(new HologramBrain());
     eve.registerModule(new EveSimulationBridge());
     
     // Boot System
@@ -75,8 +77,9 @@ const App: React.FC = () => {
       <ControlPanel />
       
       {/* Main Viewport */}
-      <div className="flex-1 relative h-full flex">
-        <div className="flex-1 relative h-full border-x border-slate-800">
+      {/* min-w-0 ensures this container shrinks when sidebar expands, preventing overflow */}
+      <div className="flex-1 relative h-full flex min-w-0">
+        <div className="flex-1 relative h-full border-x border-slate-800 min-w-0">
             <Suspense fallback={
               <div className="w-full h-full flex items-center justify-center text-blue-500 font-mono bg-[#0b1220]">
                 INITIALIZING PHYSICS ENGINE...
@@ -88,9 +91,10 @@ const App: React.FC = () => {
             {/* Hand Overlay */}
             <HandController />
             
-            {/* EVE System Layer (Overlay) */}
+            {/* EVE System Layer (Overlay) - Now includes Hologram Projector internally */}
             <EveOverlayContainer />
-            <ChatWindow />
+            
+            {/* Old ChatWindow Removed - Replaced by Hologram */}
         </div>
         
         {/* Right Panel (Charts/Tools) */}
