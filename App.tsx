@@ -25,8 +25,8 @@ import { EveController } from './ai-robot-eve/core/EveController';
 import { EveChatModule } from './ai-robot-eve/chat-ui/EveChatModule';
 import { EveOverlayContainer } from './ai-robot-eve/graphics/EveOverlayContainer';
 import { EveSimulationBridge } from './ai-robot-eve/integration/EveSimulationBridge';
+import { ChatWindow } from './ai-robot-eve/chat-ui/ChatWindow';
 
-// --- HOLOGRAM SYSTEM UPGRADE ---
 import { HologramBrain } from './eve-hologram-system/ai/HologramBrain';
 
 const App: React.FC = () => {
@@ -38,7 +38,6 @@ const App: React.FC = () => {
     
     // Register Modules
     eve.registerModule(new EveChatModule());
-    // UPGRADE: Use HologramBrain instead of EveBrain
     eve.registerModule(new HologramBrain());
     eve.registerModule(new EveSimulationBridge());
     
@@ -77,7 +76,6 @@ const App: React.FC = () => {
       <ControlPanel />
       
       {/* Main Viewport */}
-      {/* min-w-0 ensures this container shrinks when sidebar expands, preventing overflow */}
       <div className="flex-1 relative h-full flex min-w-0">
         <div className="flex-1 relative h-full border-x border-slate-800 min-w-0">
             <Suspense fallback={
@@ -91,10 +89,11 @@ const App: React.FC = () => {
             {/* Hand Overlay */}
             <HandController />
             
-            {/* EVE System Layer (Overlay) - Now includes Hologram Projector internally */}
+            {/* EVE System Layer (Visuals) */}
             <EveOverlayContainer />
-            
-            {/* Old ChatWindow Removed - Replaced by Hologram */}
+
+            {/* EVE Chat Interface (New Overlay) */}
+            <ChatWindow />
         </div>
         
         {/* Right Panel (Charts/Tools) */}
