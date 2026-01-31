@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect, useState } from 'react';
 import { useStore } from './store';
 import { ControlPanel } from './components/ControlPanel';
@@ -28,6 +27,10 @@ import { EveOverlayContainer } from './ai-robot-eve/graphics/EveOverlayContainer
 import { EveSimulationBridge } from './ai-robot-eve/integration/EveSimulationBridge';
 import { ChatWindow } from './ai-robot-eve/chat-ui/ChatWindow';
 
+// --- [SỬA LỖI] Import module EveBrain ---
+import { EveBrain } from './ai-robot-eve/ai-logic/EveBrain';
+// ----------------------------------------
+
 import { HologramBrain } from './eve-hologram-system/ai/HologramBrain';
 
 const App: React.FC = () => {
@@ -40,6 +43,11 @@ const App: React.FC = () => {
     
     // Register Modules
     eve.registerModule(new EveChatModule());
+    
+    // --- [SỬA LỖI] Đăng ký module EveBrain để kích hoạt AI ---
+    eve.registerModule(new EveBrain());
+    // --------------------------------------------------------
+    
     eve.registerModule(new HologramBrain());
     eve.registerModule(new EveSimulationBridge());
     

@@ -320,17 +320,7 @@ export class EveBrain implements EveModule {
     };
     return translations[topic] || 'Khoa Học & Kỹ Thuật';
   }
-
-    // Learning aids
-    response += `\n### 📖 Cách Sử Dụng Các Tài Liệu Này\n`;
-    response += `- **Bài báo gốc:** Cung cấp chi tiết kỹ thuật và dữ liệu thực nghiệm\n`;
-    response += `- **Trích dẫn (Citation):** Giúp bạn tìm các công trình liên quan\n`;
-    response += `- **Phương pháp:** Bạn có thể áp dụng cho nghiên cứu của riêng bạn\n`;
-
-    response += `\n**🔍 Muốn tôi tìm hiểu sâu hơn về khía cạnh nào không?**`;
-
-    return response;
-  }
+  
 
   /**
    * Synthesize insights from academic sources
@@ -497,9 +487,7 @@ export class EveBrain implements EveModule {
     // Default helpful response
     return `Tôi không hoàn toàn chắc câu hỏi của bạn là gì. Bạn có thể:\n\n1. **Hỏi về một chủ đề:** "Giải thích về bức xạ" hoặc "Anten hoạt động như thế nào?"\n2. **Yêu cầu tìm kiếm:** "Tôi muốn tìm hiểu về trường điện từ"\n3. **Tải lên tài liệu:** Hãy upload PDF hoặc tệp, tôi sẽ phân tích cho bạn\n\n🔍 **Hoặc bạn có thể:**\n- Nói "chào" để bắt đầu\n- Hỏi "bạn là ai?" để biết thêm về tôi\n- Hỏi "có thể giúp gì?" để xem các ví dụ\n\nRất vui được hỗ trợ bạn! 😊`;
   }
-    // Default - should not reach here
-    return null;
-  }
+  
 
   /**
    * Format response for learners with accessibility features
@@ -535,3 +523,5 @@ export class EveBrain implements EveModule {
     }
     this.unsubs = [];
     this.bus = null;
+}
+}
