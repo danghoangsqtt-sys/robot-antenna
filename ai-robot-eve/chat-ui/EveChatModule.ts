@@ -14,6 +14,7 @@ export class EveChatModule implements EveModule {
   private bus: any = null;
   private history: ChatMessage[] = [];
   private readonly STORAGE_KEY = 'eve_chat_history_v1';
+  private unsubs: (() => void)[] = [];
   
   private config: ChatConfig = {
     maxHistory: 50,
@@ -25,8 +26,11 @@ export class EveChatModule implements EveModule {
     this.loadHistory();
     
     // Subscribe to internal events
-    this.bus.on('chat:user_input', this.handleUserInput.bind(this));
-    this.bus.on('chat:system_notify', this.handleSystemNotify.bind(this));
+    const u1 = this.bus.on('chat:user_input', this.handleUserInput.bind(this));
+    const u2 = this.bus.on('chat:system_notify', this.handleSystemNotify.bind(this));
+    const u3 = this.bus.on('chat:new_session', this.handleNewSession.bind(this));
+    this.unsubs.push(u1, u2);
+    this.unsubs.push(u3);
     
     // Emit initial history after a short delay to ensure UI is mounted/listening
     setTimeout(() => {
@@ -40,38 +44,45 @@ export class EveChatModule implements EveModule {
     return true;
   }
 
-  private handleUserInput(event: EveEvent<{ text: string }>): void {
+  private handleUserInput(event: EveEvent<{ text: string; documents?: any[] }>): void {
     if (!event.payload) return;
-    
-    const { text } = event.payload;
+
+    const { text, documents } = event.payload;
     this.addMessage('user', text);
 
-    // Notify AI Brain (Mock for now, normally would emit 'ai:process_request')
-    this.bus.emit('ai:process_request', { text });
-    
-    // Simulate AI typing and response (Temporary Loopback)
+    // Forward documents (if any) to AI Brain so RAG can use them
+    this.bus.emit('ai:process_request', { text, documents: documents || [] });
+
+    // Indicate typing in UI; AI is expected to emit final responses.
     this.bus.emit('chat:typing_start');
     setTimeout(() => {
         this.bus.emit('chat:typing_stop');
-        // Simple echo/mock logic if no real AI module responds
-        // Ideally, the AI module would emit 'chat:ai_response' which this module handles.
-        // For this task, we'll self-generate a response for UI testing.
-        this.addMessage('eve', `Tôi đã nhận được lệnh: "${text}". Đang xử lý...`);
-    }, 1500);
+    }, this.config.typingDelayMs);
   }
 
-  private handleSystemNotify(event: EveEvent<{ text: string }>): void {
+    private handleSystemNotify(event: EveEvent<{ text: string; metadata?: any }>): void {
       if (event.payload) {
-          this.addMessage('system', event.payload.text);
+        const text = event.payload.text;
+        const metadata = event.payload.metadata;
+        // Store AI responses as 'eve' messages (not 'system') and preserve metadata
+        this.addMessage('eve', text, metadata);
       }
-  }
+    }
 
-  private addMessage(sender: 'user' | 'eve' | 'system', content: string) {
+    private handleNewSession(): void {
+    // Clear history and storage
+    this.history = [];
+    try { localStorage.removeItem(this.STORAGE_KEY); } catch (e) { /* ignore */ }
+    this.emitHistoryUpdate();
+    }
+
+  private addMessage(sender: 'user' | 'eve' | 'system', content: string, metadata?: any) {
     const msg: ChatMessage = {
       id: crypto.randomUUID(),
       sender,
       content,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      metadata: metadata || undefined
     };
 
     this.history.push(msg);
@@ -109,6 +120,10 @@ export class EveChatModule implements EveModule {
   }
 
   public destroy(): void {
-      // Cleanup if needed
+      for (const u of this.unsubs) {
+        try { u(); } catch (e) { /* ignore */ }
+      }
+      this.unsubs = [];
+      this.bus = null;
   }
 }

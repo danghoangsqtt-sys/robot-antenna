@@ -1,6 +1,66 @@
 import React from 'react';
 import { SolverState, MaxwellMethod } from './modules/maxwell/types';
 
+// --- Document & RAG Types ---
+export interface DocumentFile {
+  id: string;
+  name: string;
+  type: 'pdf' | 'txt' | 'md';
+  size: number;
+  uploadedAt: number;
+  content?: string; // Text extracted from PDF
+  embedding?: number[]; // Vector embedding for RAG
+}
+
+export interface RAGContext {
+  documents: DocumentFile[];
+  embeddings: Map<string, number[]>; // docId -> embedding
+  enabled: boolean;
+}
+
+export interface ChatMessageContent {
+  text: string;
+  formulas?: Array<{ latex: string; position: number }>; // Embedded LaTeX
+  codeBlocks?: Array<{ language: string; code: string }>;
+  imageUrls?: string[]; // Inline images
+  sourceDoc?: string; // Reference to source document
+}
+
+export interface AdvancedChatMessage {
+  id: string;
+  sender: 'user' | 'eve' | 'system';
+  content: ChatMessageContent;
+  timestamp: number;
+  metadata?: {
+    tokensUsed?: number;
+    processingTime?: number;
+    documentsSourced?: string[]; // Which docs were used in RAG
+  };
+}
+
+// --- Academic Source Types (Internet Research) ---
+export interface AcademicSource {
+  id: string;
+  title: string;
+  authors: string[];
+  year: number;
+  journal?: string; // Journal name
+  doi?: string; // Digital Object Identifier
+  url?: string; // Direct link to paper
+  abstract?: string; // Paper summary
+  sourceType: 'arxiv' | 'pubmed' | 'crossref' | 'wiki' | 'general';
+  relevanceScore?: number; // 0-1 how relevant to query
+  citations?: number; // Citation count
+  tags?: string[]; // Research topics
+}
+
+export interface InternetResearchResult {
+  query: string;
+  sources: AcademicSource[];
+  timestamp: number;
+  searchEngine: string; // 'arxiv' | 'pubmed' | 'crossref' | 'wikipedia'
+}
+
 export enum AntennaType {
   DIPOLE = 'Dipole',
   YAGI = 'Yagi-Uda',
@@ -172,6 +232,18 @@ export interface VersionSnapshot {
   data: Partial<SimulationState>;
 }
 
+export interface SettingsState {
+  geminiApiKey: string;
+  eveScale: number; // 0.5 to 2.0 (50% to 200%)
+}
+
+export interface SystemGuideEntry {
+  id: string;
+  title: string;
+  description: string;
+  category: 'antenna' | 'ai' | 'ui' | 'physics' | 'export';
+}
+
 export interface AdvancedPhysicsState {
   arrayEnabled: boolean;
   arrayElements: number;     // N
@@ -240,6 +312,9 @@ export interface SimulationState extends AdvancedPhysicsState {
 
   // History
   history: VersionSnapshot[];
+
+  // Settings
+  settings: SettingsState;
   
   // Actions
   setAntennaType: (type: AntennaType) => void;
@@ -289,6 +364,10 @@ export interface SimulationState extends AdvancedPhysicsState {
   // History Actions
   takeSnapshot: (label: string) => void;
   restoreSnapshot: (id: string) => void;
+
+  // Settings Actions
+  setGeminiApiKey: (key: string) => void;
+  setEveScale: (scale: number) => void;
 
   // Global Load
   loadSimulation: (state: Partial<SimulationState>) => void;

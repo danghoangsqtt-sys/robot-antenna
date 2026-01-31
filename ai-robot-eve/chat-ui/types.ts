@@ -3,6 +3,11 @@ export interface ChatMessage {
   sender: 'user' | 'eve' | 'system';
   content: string;
   timestamp: number;
+  metadata?: {
+    hasFormula?: boolean;
+    hasCode?: boolean;
+    sourcesUsed?: string[];
+  };
 }
 
 export interface ChatState {

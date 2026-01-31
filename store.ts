@@ -113,6 +113,13 @@ export const useStore = create<SimulationState & { zoomDelta: number; setZoomDel
   activeRightPanel: 'polar',
   history: [],
 
+  // Settings Defaults
+  settings: {
+    geminiApiKey: localStorage.getItem('eve_gemini_api_key') || '',
+    geminiProxy: localStorage.getItem('eve_gemini_proxy') || '',
+    eveScale: 1.0 // 100% default
+  },
+
   setAntennaType: (type) => set((state) => ({ 
     antennaType: type,
     gain: ANTENNA_PRESETS[type].defaultGain 
@@ -250,5 +257,23 @@ export const useStore = create<SimulationState & { zoomDelta: number; setZoomDel
               history: [currentSnap, ...s.history].slice(0, 20)
           }));
       }
+  },
+
+  setGeminiApiKey: (key) => {
+      localStorage.setItem('eve_gemini_api_key', key);
+      set((state) => ({
+          settings: { ...state.settings, geminiApiKey: key }
+      }));
+  },
+    setGeminiProxy: (proxy) => {
+      try { localStorage.setItem('eve_gemini_proxy', proxy); } catch {}
+      set((state) => ({ settings: { ...state.settings, geminiProxy: proxy } }));
+    },
+
+  setEveScale: (scale) => {
+      const clamped = Math.max(0.5, Math.min(2.0, scale)); // 0.5x to 2.0x
+      set((state) => ({
+          settings: { ...state.settings, eveScale: clamped }
+      }));
   }
 }));

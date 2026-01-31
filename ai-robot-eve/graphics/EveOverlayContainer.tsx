@@ -5,23 +5,26 @@ import { EveRobotVisual } from './EveRobotVisual';
 
 export const EveOverlayContainer: React.FC = () => {
   return (
-    // Fixed container at bottom right, pointer-events-none by default
-    <div className="absolute bottom-0 right-0 w-[400px] h-[600px] z-40 pointer-events-none">
+    <div className="absolute bottom-0 right-0 w-[280px] h-[350px] z-10 pointer-events-none">
        <Canvas 
-         camera={{ position: [0, 1, 5], fov: 35 }} 
-         gl={{ alpha: true, antialias: true, toneMappingExposure: 1.2 }}
-         // Enable pointer events for the Canvas so click events reach the mesh
-         // Set eventSource to body so head tracking works across the whole screen even if mouse is outside this div
+         camera={{ position: [0, 1, 4.8], fov: 40 }} 
+         gl={{ alpha: true, antialias: true, toneMappingExposure: 1.3 }}
          style={{ pointerEvents: 'auto' }}
-         eventSource={document.body}
        >
-          <ambientLight intensity={0.6} color="#ffffff" />
-          <spotLight position={[5, 5, 5]} intensity={2.0} angle={0.5} penumbra={1} castShadow color="#ffffff"/>
-          <pointLight position={[-2, 1, 3]} intensity={1.5} color="#e0f2fe" />
-          <pointLight position={[0, -2, 2]} intensity={0.8} color="#38bdf8" /> 
+          {/* Key Light - Front right */}
+          <spotLight position={[4, 3, 3]} intensity={2.5} angle={0.6} penumbra={0.8} color="#ffffff" castShadow />
+          
+          {/* Ambient fill light - Bright white base */}
+          <ambientLight intensity={0.75} color="#ffffff" />
+          
+          {/* Cyan accent light - Right side for visor pop */}
+          <pointLight position={[3, 0, 2]} intensity={1.2} color="#0099dd" distance={8} decay={1.5} />
+          
+          {/* Soft backlight for definition */}
+          <pointLight position={[-2, 1, -1]} intensity={0.6} color="#e0f2fe" distance={6} decay={2} />
           
           <Suspense fallback={null}>
-             <group position={[0, -1.0, 0]}>
+             <group position={[0, -0.8, 0]}>
                 <EveRobotVisual />
              </group>
           </Suspense>

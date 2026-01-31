@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { toggleVRMode } from '../modules/vrControl';
 
-export const ControlPanel: React.FC = () => {
+export const ControlPanel: React.FC<{ onSettingsClick?: () => void }> = ({ onSettingsClick }) => {
   const store = useStore();
   const { 
     antennaType, setAntennaType,
@@ -227,7 +227,7 @@ export const ControlPanel: React.FC = () => {
                   <span className="truncate">ANTENNAVIZ</span>
                   <span className="text-[10px] align-top bg-blue-900/30 border border-blue-800 text-blue-400 px-1 rounded ml-1 shrink-0">AI</span>
                 </h1>
-                <button onClick={toggleSidebar} className="text-slate-500 hover:text-blue-400 transition-colors p-1 hover:bg-slate-800 rounded shrink-0">
+                <button onClick={toggleSidebar} className="text-slate-500 hover:text-blue-400 transition-colors p-1 hover:bg-slate-800 rounded shrink-0" aria-label="Toggle sidebar" title="Ẩn thanh công cụ">
                   <ChevronLeft size={18} />
                 </button>
              </>
@@ -359,7 +359,7 @@ export const ControlPanel: React.FC = () => {
                             >
                                 <Upload size={12}/> PHÂN TÍCH NHANH (QUICK)
                             </button>
-                            <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileUpload}/>
+                            <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileUpload} aria-label="Upload antenna image"/>
                         </div>
                         
                         {analyzing && <div className="text-[10px] text-emerald-400 animate-pulse font-bold">AI ĐANG XỬ LÝ: {aiReasoning}</div>}
@@ -571,7 +571,7 @@ export const ControlPanel: React.FC = () => {
                     <div className="flex justify-between items-center mb-2">
                         <span className={labelClass + " mb-0"}>ĐIỀU KHIỂN CỬ CHỈ (VR)</span>
                         <div className="flex gap-2">
-                            <button onClick={() => setActiveRightPanel('versionHistory')} className="text-slate-500 hover:text-blue-400">
+                            <button onClick={() => setActiveRightPanel('versionHistory')} className="text-slate-500 hover:text-blue-400" aria-label="View version history" title="Lịch sử">
                                 <History size={14} />
                             </button>
                             <button onClick={toggleWebcam} className="text-slate-500 hover:text-blue-400">
@@ -605,14 +605,14 @@ export const ControlPanel: React.FC = () => {
           {/* COLLAPSED CONTENT */}
           <div className={`absolute inset-0 flex flex-col items-center pt-8 transition-opacity duration-200 ${!isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                 <Radar className="text-blue-500/50 mb-6" size={24} />
-                <div style={{ writingMode: 'vertical-rl' }} className="text-[10px] font-bold tracking-widest uppercase rotate-180 text-slate-600 whitespace-nowrap cursor-default select-none">
+                <div className="text-[10px] font-bold tracking-widest uppercase text-slate-600 whitespace-nowrap cursor-default select-none" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                     ANTENNAVIZ AI
                 </div>
           </div>
       </div>
 
       {/* FOOTER */}
-      <div className={`flex-none border-t border-slate-800 bg-[#0b1220] transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0 p-0 border-t-0' : 'max-h-40 opacity-100 p-4 border-t'}`}>
+      <div className={`flex-none border-t border-slate-800 bg-[#0b1220] transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0 p-0 border-t-0' : 'max-h-56 opacity-100 p-4 border-t'}`}>
          {/* Footer Content Wrapper to fix width */}
          <div className={PANEL_WIDTH}>
             {/* Save/Load Row */}
@@ -623,11 +623,11 @@ export const ControlPanel: React.FC = () => {
                 <button onClick={() => loadInputRef.current?.click()} className="bg-[#101c2e] hover:bg-slate-800 text-slate-400 text-[10px] py-2 rounded border border-slate-700 flex items-center justify-center gap-1 shadow-sm">
                 <FolderOpen size={12}/> MỞ DỰ ÁN
                 </button>
-                <input ref={loadInputRef} type="file" className="hidden" accept=".json" onChange={handleLoadSimulation}/>
+                <input ref={loadInputRef} type="file" className="hidden" accept=".json" onChange={handleLoadSimulation} aria-label="Load simulation file"/>
             </div>
             
             {/* Export Row */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 mb-2">
                 <button onClick={handleExportPNG} className={btnClass}>
                 <Camera size={14} /> XUẤT ẢNH
                 </button>
@@ -635,6 +635,14 @@ export const ControlPanel: React.FC = () => {
                 <Video size={14} /> QUAY VIDEO
                 </button>
             </div>
+
+            {/* Settings Button (Full Width) */}
+            <button 
+              onClick={onSettingsClick}
+              className="w-full bg-cyan-900/20 hover:bg-cyan-800/30 text-cyan-400 border border-cyan-600/40 hover:border-cyan-500 text-[11px] py-2 rounded flex items-center justify-center gap-2 transition-all shadow-sm"
+            >
+              <Settings size={14} /> CÀI ĐẶT HỆ THỐNG
+            </button>
          </div>
       </div>
     </div>

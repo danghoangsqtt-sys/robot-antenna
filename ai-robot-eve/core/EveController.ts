@@ -64,10 +64,13 @@ export class EveController {
 
   private startLoop(): void {
     if (this.tickInterval) return;
+    let last = performance.now();
     this.tickInterval = window.setInterval(() => {
       const now = performance.now();
+      const delta = now - last;
+      last = now;
       this.modules.forEach(module => {
-        if (module.update) module.update(100); // simplify delta
+        if (module.update) module.update(delta);
       });
     }, this.config.tickRate);
   }

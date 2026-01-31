@@ -1,5 +1,5 @@
 
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useStore } from './store';
 import { ControlPanel } from './components/ControlPanel';
 import { Visualizer } from './components/Visualizer';
@@ -19,6 +19,7 @@ import { NearFieldPanel } from './ui/panels/NearFieldPanel';
 import { VisionBuilderPanel } from './ui/panels/VisionBuilderPanel';
 import { MaxwellSolverPanel } from './ui/panels/MaxwellSolverPanel';
 import { VersionHistoryPanel } from './ui/panels/VersionHistoryPanel';
+import { SettingsPanel } from './ui/panels/SettingsPanel';
 
 // EVE System Imports
 import { EveController } from './ai-robot-eve/core/EveController';
@@ -31,6 +32,7 @@ import { HologramBrain } from './eve-hologram-system/ai/HologramBrain';
 
 const App: React.FC = () => {
   const { activeRightPanel } = useStore();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Initialize EVE Robot System
   useEffect(() => {
@@ -71,9 +73,10 @@ const App: React.FC = () => {
   };
 
   return (
+    <>
     <div className="flex h-screen w-screen bg-[#0b1220] overflow-hidden text-slate-200 font-sans">
       {/* Left Panel */}
-      <ControlPanel />
+      <ControlPanel onSettingsClick={() => setSettingsOpen(true)} />
       
       {/* Main Viewport */}
       <div className="flex-1 relative h-full flex min-w-0">
@@ -100,6 +103,9 @@ const App: React.FC = () => {
         {renderRightPanel()}
       </div>
     </div>
+    {/* Settings Modal Overlay */}
+    <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </>
   );
 };
 

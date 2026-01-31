@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -12,16 +12,23 @@ export const useEveAnimation = (
   const blinkTimerRef = useRef(Math.random() * 5);
   const [isBlinking, setIsBlinking] = useState(false);
   
-  // Smooth mouse tracking vectors
-  const mouse = useRef(new THREE.Vector2(0, 0));
-  const targetRotation = useRef(new THREE.Vector2(0, 0));
+  // Vectors for tracking
+  const targetMouse = useRef(new THREE.Vector2(0, 0)); // Raw input
   
-  // Update mouse pos with pre-smoothing
-  useFrame((state) => {
-      // Lerp the raw pointer input to filter out high-frequency noise/jitter
-      mouse.current.lerp(state.pointer, 0.1);
-  });
+  // Setup global mouse tracking independently of R3F raycasting context
+  useEffect(() => {
+      const handleMouseMove = (event: MouseEvent) => {
+          // Normalize to -1...1 (Standard NDC)
+          const x = (event.clientX / window.innerWidth) * 2 - 1;
+          const y = -(event.clientY / window.innerHeight) * 2 + 1;
+          targetMouse.current.set(x, y);
+      };
 
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Frame Loop
   useFrame((state, delta) => {
     timeRef.current += delta;
     const t = timeRef.current;
@@ -36,29 +43,28 @@ export const useEveAnimation = (
 
     // --- BODY IDLE (Floating) ---
     if (groupRef.current) {
-        // Sine wave hover - reduced speed and amplitude for stability
-        groupRef.current.position.y = Math.sin(t * 1.0) * 0.05;
+        // Sine wave hover
+        groupRef.current.position.y = Math.sin(t * 1.5) * 0.08;
         // Subtle breathing rotation
-        groupRef.current.rotation.z = Math.sin(t * 0.5) * 0.01;
+        groupRef.current.rotation.z = Math.sin(t * 0.8) * 0.02;
     }
 
     // --- HEAD TRACKING ---
     if (headRef.current) {
-        // Reduced sensitivity (0.4) to keep head within natural range
-        // Positive X pointer -> Positive Yaw -> Looks Right (Screen)
-        // Positive Y pointer -> Negative Pitch -> Looks Up (Screen)
+        // High sensitivity for "snappy" feeling
+        const sensitivity = 1.0;
         
-        const sensitivity = 0.4;
-        targetRotation.current.x = -mouse.current.y * sensitivity;
-        targetRotation.current.y = mouse.current.x * sensitivity;
+        // Calculate target angles directly from mouse input (no intermediate lerp)
+        const targetPitch = -targetMouse.current.y * sensitivity;
+        const targetYaw = targetMouse.current.x * sensitivity;
         
-        // Clamp angles to prevent "Exorcist" spinning
-        const clampedPitch = THREE.MathUtils.clamp(targetRotation.current.x, -0.5, 0.5);
-        const clampedYaw = THREE.MathUtils.clamp(targetRotation.current.y, -0.8, 0.8);
+        // Clamp angles
+        const clampedPitch = THREE.MathUtils.clamp(targetPitch, -0.6, 0.6);
+        const clampedYaw = THREE.MathUtils.clamp(targetYaw, -1.0, 1.0);
         
-        // Apply smooth rotation with heavier damping (0.05)
-        headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, clampedPitch, 0.05);
-        headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, clampedYaw, 0.05);
+        // Fast Lerp (0.2) for responsive movement
+        headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, clampedPitch, 0.2);
+        headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, clampedYaw, 0.2);
     }
   });
 
