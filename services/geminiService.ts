@@ -5,13 +5,17 @@ import { useStore } from "../store";
 
 // Get API key from env or store (user-configured)
 const getGeminiApiKey = (): string => {
-  const envKey = process.env.VITE_GEMINI_API_KEY || '';
-  if (envKey) return envKey;
-  
+  const envKey = (import.meta.env.VITE_GEMINI_API_KEY as string) || '';
+  if (envKey) return envKey; // [FIX] use import.meta.env in Vite instead of process.env
+
   // Fallback to user-configured key from store
   try {
-    return useStore.getState().settings.geminiApiKey || '';
+    const storeKey = useStore.getState().settings.geminiApiKey || '';
+    if (storeKey) return storeKey;
+    console.error('[FIX] Gemini API key missing. Set VITE_GEMINI_API_KEY or configure in Settings.'); // [FIX] defensive log, do not crash
+    return '';
   } catch {
+    console.error('[FIX] Gemini API key missing and store unavailable.'); // [FIX] defensive log
     return '';
   }
 };
@@ -123,7 +127,7 @@ export const generateText = async (prompt: string, options?: {temperature?: numb
 
   try {
     // If a proxy URL is provided via env, prefer it to avoid CORS issues
-    const proxy = process.env.VITE_GEMINI_PROXY || (useStore.getState().settings.geminiProxy || '');
+    const proxy = (import.meta.env.VITE_GEMINI_PROXY as string) || (useStore.getState().settings.geminiProxy || ''); // [FIX]
     if (proxy) {
       const res = await fetch(`${proxy.replace(/\/$/, '')}/generate`, {
         method: 'POST',
@@ -136,7 +140,15 @@ export const generateText = async (prompt: string, options?: {temperature?: numb
     }
 
     // Direct call to Google Gen AI REST API (may be blocked by CORS in browser)
-    const endpoint = process.env.VITE_GEMINI_ENDPOINT || 'https://generativelanguage.googleapis.com/v1beta2/models/chat-bison-001:generate';
+    const endpoint = (import.meta.env.VITE_GEMINI_ENDPOINT as string) || 'https://generativelanguage.googleapis.com/v1beta2/models/gemini-1.5-flash:generate'; // [FIX] set explicit model name
+
+    // [FIX] Defensive check: Browsers cannot call Google's GenAI API directly due to CORS.
+    // If no proxy is configured and we're running in a browser context, return a clear error message
+    // so the UI can show guidance instead of attempting a doomed fetch and throwing CORS errors.
+    if (typeof window !== 'undefined' && !proxy && endpoint.includes('generativelanguage.googleapis.com')) {
+      console.error('[FIX] Browser CORS: Direct requests to Google GenAI blocked. Configure VITE_GEMINI_PROXY.');
+      return `(ERROR) Browser CORS: Direct browser requests to Google GenAI are blocked by CORS. Set VITE_GEMINI_PROXY to a server-side proxy or use the Electron main process to call the API.`;
+    }
     const body = {
       prompt: { text: prompt },
       temperature: options?.temperature ?? 0.2,

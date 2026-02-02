@@ -21,6 +21,13 @@ export class EveChatModule implements EveModule {
     typingDelayMs: 600
   };
 
+  // [FIX] Constructor to allow optional bus injection
+  constructor(bus?: any) {
+    if (bus) {
+      this.bus = bus;
+    }
+  }
+
   public async init(controller: any): Promise<boolean> {
     this.bus = controller.bus;
     this.loadHistory();

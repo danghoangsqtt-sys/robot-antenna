@@ -59,6 +59,14 @@ export class EveController {
     }
 
     this.setStatus(EveSystemStatus.READY);
+    // [FIX] Ensure 'ai:process_request' events reach the AI brain even if timing/race conditions occur
+    this.bus.on('ai:process_request', (evt) => {
+      const brain = this.modules.get('eve_brain_logic') as any;
+      if (brain && typeof brain.handleRequest === 'function') {
+        try { brain.handleRequest(evt); } catch (e) { console.error('[FIX] forwarding ai:process_request to EveBrain failed', e); }
+      }
+    });
+
     this.startLoop();
   }
 

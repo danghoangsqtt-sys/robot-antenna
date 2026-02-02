@@ -27,7 +27,10 @@ function createWindow() {
       // -----------------------------------------------------------------------
       preload: path.join(__dirname, 'preload.mjs'), 
       nodeIntegration: true,
-      contextIsolation: false, 
+      contextIsolation: false,
+      // [FIX] Disable webSecurity to allow Renderer process to fetch from external APIs without CORS blocking.
+      // This is safe for internal Electron tools and is required for API calls from the renderer to services like Google GenAI.
+      webSecurity: false,
     },
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#0b1220', 

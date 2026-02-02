@@ -20,6 +20,13 @@ export class EveBrain implements EveModule {
   private bus: any = null;
   private unsubs: (() => void)[] = [];
 
+  // [FIX] Constructor to allow optional bus injection (for testing or explicit DI)
+  constructor(bus?: any) {
+    if (bus) {
+      this.bus = bus;
+    }
+  }
+
   // SYSTEM PROMPT
   private readonly SYSTEM_INSTRUCTION = `
     ROLE: Bạn là EVE, trợ lý AI chuyên về Kỹ thuật Anten và Vật Lý Điện Từ.
@@ -101,26 +108,34 @@ export class EveBrain implements EveModule {
         }
 
         // Gửi phản hồi thành công
-        this.bus.emit('chat:system_notify', {
-          text: finalResponse,
-          metadata: {
-            hasFormula: finalResponse.includes('$'),
-            sourcesUsed: usedSources, // Chỉ hiện nguồn khi thành công
-            isResearchMode: !!academicContext
-          }
-        });
+        if (this.bus) {
+          this.bus.emit('chat:system_notify', {
+            text: finalResponse,
+            metadata: {
+              hasFormula: finalResponse.includes('$'),
+              sourcesUsed: usedSources, // Chỉ hiện nguồn khi thành công
+              isResearchMode: !!academicContext
+            }
+          });
+        } else {
+          console.warn('[FIX] EveBrain: bus is null, cannot emit chat:system_notify', { finalResponse, usedSources }); // [FIX]
+        }
 
       } catch (error) {
         console.error('EVE Brain Error:', error);
         
         // Xử lý lỗi thông minh: Xóa nguồn rác, đưa ra lời khuyên cụ thể
-        this.bus.emit('chat:system_notify', {
-          text: this.getErrorResponse(query),
-          metadata: {
-            sourcesUsed: [], // XÓA SẠCH NGUỒN RÁC KHI LỖI
-            isError: true
-          }
-        });
+        if (this.bus) {
+          this.bus.emit('chat:system_notify', {
+            text: this.getErrorResponse(query),
+            metadata: {
+              sourcesUsed: [], // XÓA SẠCH NGUỒN RÁC KHI LỖI
+              isError: true
+            }
+          });
+        } else {
+          console.warn('[FIX] EveBrain: bus is null, cannot emit error system_notify'); // [FIX]
+        }
       }
     }, delay);
   }
